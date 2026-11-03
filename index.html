@@ -67,26 +67,22 @@
 
     <!-- Firebase Realtime Logic -->
     <script type="module">
-        // 1. Importiere Firebase Module
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query, orderBy } 
-        from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
-        // 2. DEINE FIREBASE KONFIGURATION (Hier musst du deine Daten von der Firebase Webseite eintragen!)
         const firebaseConfig = {
-            apiKey: "DEIN_API_KEY_HIER_EINSETZEN",
-            authDomain: "DEINE_PROJECT_ID.firebaseapp.com",
-            projectId: "DEINE_PROJECT_ID",
-            storageBucket: "DEINE_PROJECT_ID.appspot.com",
-            messagingSenderId: "DEINE_SENDER_ID",
-            appId: "DEINE_APP_ID"
+            apiKey: "AIzaSyBcympyQoY6K72wI-jhubAef34JbS8J-QA",
+            authDomain: "lovelife-9f019.firebaseapp.com",
+            projectId: "lovelife-9f019",
+            storageBucket: "lovelife-9f019.firebasestorage.app",
+            messagingSenderId: "69566619232",
+            appId: "1:69566619232:web:c30c1e30efc35aeb07ed05"
         };
 
-        // 3. Initialisiere Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Globale Funktionen für das HTML zugänglich machen
         window.addItem = async (collectionName, inputId) => {
             const input = document.getElementById(inputId);
             const val = input.value.trim();
@@ -126,7 +122,6 @@
             await deleteDoc(doc(db, collectionName, id));
         };
 
-        // Echtzeit-Listener (Listen live aktualisieren, wenn sich Daten in der Cloud ändern)
         function setupListener(collectionName, elementId, isChore = false) {
             const q = query(collection(db, collectionName), orderBy("createdAt", "asc"));
             
@@ -163,7 +158,6 @@
             });
         }
 
-        // Starte die Live-Verbindung
         setupListener('tasks', 'tasksList');
         setupListener('shopping', 'shoppingList');
         setupListener('chores', 'choresList', true);
