@@ -13,7 +13,6 @@
             background-attachment: fixed;
         }
         
-        /* Modern Glass Card */
         .glass-card { 
             background: rgba(255, 255, 255, 0.65); 
             backdrop-filter: blur(20px); 
@@ -22,20 +21,23 @@
             box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
         }
 
-        /* Custom Scrollbar for elegant look */
+        /* Daily Quote Special Styling */
+        .quote-card {
+            background: linear-gradient(120deg, rgba(255,255,255,0.9) 0%, rgba(255,240,245,0.8) 100%);
+            border-left: 4px solid #f472b6;
+        }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
 
-        /* Smooth reveal animations */
         .list-item-enter { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Verpuffen-Effekt */
         .puff-out {
             opacity: 0;
             transform: scale(0.8) translateY(-20px) rotate(2deg);
@@ -63,6 +65,16 @@
                 <span class="bg-white/80 text-teal-700 px-5 py-2.5 rounded-2xl shadow-sm border border-white"><i class="fas fa-plane mr-2 opacity-70"></i>Sardinien & Toscana</span>
             </div>
         </header>
+
+        <!-- Spruch des Tages (Marisa Appreciation) -->
+        <section class="glass-card quote-card rounded-[2rem] p-6 md:p-8 shadow-sm relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-32 h-32 bg-pink-100 rounded-full blur-3xl opacity-50 -z-10 -translate-y-1/2 translate-x-1/2"></div>
+            <div class="flex items-center mb-2">
+                <i class="fas fa-quote-left text-pink-400 text-xl mr-3"></i>
+                <h2 class="text-lg font-bold text-gray-800 tracking-wide uppercase text-xs text-pink-500">Botschaft des Tages für Marisa</h2>
+            </div>
+            <p id="dailyQuoteText" class="text-xl md:text-2xl font-medium text-gray-700 leading-relaxed italic"></p>
+        </section>
 
         <!-- 2x2 Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -139,6 +151,29 @@
 
         </div>
     </div>
+
+    <!-- Tägliche Zitate Logik -->
+    <script>
+        const marisaQuotes = [
+            "Marisa, danke, dass du jeden Tag besonders machst – egal ob beim Sonnenuntergang auf Sardinien oder im Alltag Zuhause in Altdorf.",
+            "Für die beste Ehefrau und Mami: Dein Lächeln, wie damals in der Toscana oder in Griechenland, ist mein grösster Antrieb.",
+            "Egal ob wir durch Lucca rennen, in Caslano spazieren oder den Alltag wuppen – mit dir an meiner Seite ist alles ein Abenteuer.",
+            "Du bist mein Fels in der Brandung. Vom Perdepera Resort bis zum Bürglen-Ausflug – die schönsten Erinnerungen gehören uns.",
+            "Eine starke Frau, eine wunderbare Mutter für Stella. Danke, dass du unser Familienleben so grossartig meisterst. Du bist unbezahlbar.",
+            "Egal wie stressig mein Tag im SVZ ist – der Gedanke an unsere Familienferien am Gardasee und dein Lächeln gibt mir Kraft.",
+            "Unsere gemeinsamen Jahre seit dem 31.05.2019 sind mein grösster Schatz. Ich bin unendlich stolz, dich an meiner Seite zu haben.",
+            "Die kleinen Momente mit dir, sei es in Isenthal oder gemütlich auf dem Sofa, bedeuten mir mehr als alles andere auf der Welt."
+        ];
+
+        function displayDailyQuote() {
+            // Berechnet die Tage seit dem 1. Jan 1970 und teilt sie durch die Anzahl der Sprüche
+            const today = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+            const quoteIndex = today % marisaQuotes.length;
+            document.getElementById('dailyQuoteText').innerText = "«" + marisaQuotes[quoteIndex] + "»";
+        }
+        
+        displayDailyQuote();
+    </script>
 
     <!-- Firebase Realtime Logic -->
     <script type="module">
@@ -230,7 +265,6 @@
                     const id = docSnap.id;
                     
                     const li = document.createElement('li');
-                    // Styling der Listen-Elemente
                     li.className = `list-item-enter flex justify-between items-center p-4 rounded-2xl border ${item.done ? 'bg-gray-50/50 border-transparent text-gray-400' : 'bg-white border-gray-100 text-gray-700 shadow-sm hover:shadow-md'} transition-all duration-300`;
                     
                     let contentHTML = `<span class="flex-1 cursor-pointer text-lg ${item.done ? 'line-through decoration-gray-300' : 'font-medium'}" onclick="toggleDone('${collectionName}', '${id}', ${item.done})">${item.text}</span>`;
