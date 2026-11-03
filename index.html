@@ -21,7 +21,6 @@
             box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
         }
 
-        /* Daily Quote Special Styling */
         .quote-card {
             background: linear-gradient(120deg, rgba(255,255,255,0.9) 0%, rgba(255,240,245,0.8) 100%);
             border-left: 4px solid #f472b6;
@@ -152,21 +151,62 @@
         </div>
     </div>
 
-    <!-- Tägliche Zitate Logik -->
+    <!-- Tägliche Zitate Logik: 50 personalisierte Botschaften -->
     <script>
         const marisaQuotes = [
-            "Marisa, danke, dass du jeden Tag besonders machst – egal ob beim Sonnenuntergang auf Sardinien oder im Alltag Zuhause in Altdorf.",
-            "Für die beste Ehefrau und Mami: Dein Lächeln, wie damals in der Toscana oder in Griechenland, ist mein grösster Antrieb.",
-            "Egal ob wir durch Lucca rennen, in Caslano spazieren oder den Alltag wuppen – mit dir an meiner Seite ist alles ein Abenteuer.",
-            "Du bist mein Fels in der Brandung. Vom Perdepera Resort bis zum Bürglen-Ausflug – die schönsten Erinnerungen gehören uns.",
-            "Eine starke Frau, eine wunderbare Mutter für Stella. Danke, dass du unser Familienleben so grossartig meisterst. Du bist unbezahlbar.",
-            "Egal wie stressig mein Tag im SVZ ist – der Gedanke an unsere Familienferien am Gardasee und dein Lächeln gibt mir Kraft.",
-            "Unsere gemeinsamen Jahre seit dem 31.05.2019 sind mein grösster Schatz. Ich bin unendlich stolz, dich an meiner Seite zu haben.",
-            "Die kleinen Momente mit dir, sei es in Isenthal oder gemütlich auf dem Sofa, bedeuten mir mehr als alles andere auf der Welt."
+            "Marisa, jeder Tag mit dir ist ein Geschenk. Danke, dass du mein Ruhepol bist.",
+            "Seit dem 31. Mai 2019 weiss ich: Die beste Entscheidung meines Lebens warst du.",
+            "Wenn ich nach einer langen Schicht im SVZ nach Hause komme, ist dein Lächeln alles, was ich brauche.",
+            "Danke, dass du Stella eine so wunderbare, liebevolle Mami bist. Ihr seid mein Ein und Alles.",
+            "Ob wir durch die Gassen von Siena schlendern oder einfach in Altdorf auf dem Sofa sitzen – Hauptsache mit dir.",
+            "Deine Stärke und deine Herzlichkeit faszinieren mich jeden Tag aufs Neue, Marisa.",
+            "Ich schätze all die kleinen Dinge, die du im Hintergrund für unsere Familie tust. Nichts davon ist selbstverständlich.",
+            "Die Erinnerungen an unsere Ferien auf Sardinien sind wunderschön, aber mein liebster Ort ist immer da, wo du bist.",
+            "Du bist nicht nur meine Ehefrau, sondern mein bester Freund und mein grösster Rückhalt.",
+            "Stella hat dein wunderbares Lachen geerbt. Dafür bin ich jeden Tag dankbar.",
+            "Wie wir gemeinsam durch Lucca gerannt sind, werde ich nie vergessen. Mit dir macht das Leben einfach Spass.",
+            "Egal wie stürmisch der Alltag ist, bei dir finde ich immer meinen Frieden, Marisa.",
+            "Danke, dass du mich liebst, auch wenn ich mal wieder stundenlang trainiere und Gewichte stemme.",
+            "Ein Spaziergang in Caslano oder ein Ausflug nach Isenthal – du machst jeden noch so kleinen Moment besonders.",
+            "Dein Sinn für Humor und deine Leichtigkeit bringen so viel Licht in unser Haus.",
+            "Marisa, du bist das Herz unserer Familie. Danke für all deine unermüdliche Liebe.",
+            "Ich bewundere, wie du den Alltag mit Stella meisterst. Du bist eine echte Superheldin.",
+            "Weisst du noch, Limone sul Garda? Genau so wunderschön wie dieser Ort bist du für mich.",
+            "Jedes Mal, wenn ich dich ansehe, weiss ich, dass ich genau da angekommen bin, wo ich hingehöre.",
+            "Deine Geduld, wenn ich im SVZ mal wieder einspringen muss, bedeutet mir wahnsinnig viel.",
+            "Mit dir auf dem SUP übers Wasser gleiten – das sind die Momente, in denen für mich die Welt stillsteht.",
+            "Du gibst mir das Gefühl, dass wir gemeinsam alles schaffen können. Wir sind ein unschlagbares Team.",
+            "Marisa, du bist wunderschön – von innen und von aussen.",
+            "Die Art, wie du Stella die Welt erklärst, berührt mich jedes Mal zutiefst.",
+            "Danke, dass du unser Haus in Altdorf Tag für Tag zu einem echten Zuhause machst.",
+            "Unser Hochzeitstag war magisch, aber das wahre Glück ist unser gemeinsamer Alltag.",
+            "Ob Urlaub in Griechenland oder einfach ein Wochenende in Bürglen – du bist und bleibst mein Lieblingsmensch.",
+            "Ich liebe deine Leidenschaft und die wundervolle Energie, die du in unsere Beziehung steckst.",
+            "Marisa, danke für dein offenes Ohr, dein Verständnis und deine bedingungslose Unterstützung.",
+            "Du bist der Grund, warum ich jeden Morgen mit einem Lächeln aufstehe.",
+            "Die Tage im Hotel Admiral in Lugano waren traumhaft – genau wie mein Leben mit dir.",
+            "Es sind die leisen, gemütlichen Momente am Abend mit dir, die mir die meiste Kraft geben.",
+            "Stella schaut zu dir auf, und ich tue das auch. Du bist eine unglaubliche Frau.",
+            "Egal welche Herausforderungen kommen, solange ich deine Hand halte, ist alles gut.",
+            "Danke, dass du mich so nimmst, wie ich bin – mit all meinen Ecken, Kanten und Eigenheiten.",
+            "Wenn wir zusammen lachen, bleibt die Zeit für einen Moment stehen.",
+            "Du bist das Beste, was mir je passiert ist, Marisa.",
+            "Die tiefe Liebe, die du in unsere Familie steckst, spüre ich in jedem Detail unseres Alltags.",
+            "Jeder neue Tag mit dir ist eine weitere Chance, dir zu zeigen, wie sehr ich dich liebe.",
+            "Erinnerst du dich an Pisa? Ich falle jeden Tag ein bisschen mehr für dich – ganz ohne schiefen Turm.",
+            "Deine Fürsorge und deine Wärme machen dich zur perfekten Partnerin für mich.",
+            "Marisa, ich schätze deine Ehrlichkeit und deinen Mut. Du inspirierst mich.",
+            "Danke, dass wir dieses wunderbare Leben gemeinsam aufbauen und geniessen dürfen.",
+            "Ein Blick von dir reicht, und der ganze berufliche Stress fällt einfach von mir ab.",
+            "Unsere Ferien im Perdepera Resort waren ein Traum, aber mein wahres Paradies bist du.",
+            "Mit dir an meiner Seite fühle ich mich stark und unbesiegbar.",
+            "Du bist die Stimme der Vernunft und der Herzschlag unseres Zuhauses.",
+            "Marisa, du machst mein Leben nicht nur schöner, sondern erst richtig komplett.",
+            "Für all die Male, die ich es im Alltagstrubel nicht laut sage: Danke für alles, was du tust. Ich sehe es.",
+            "Wir haben schon so viel Schönes erlebt, und doch freue ich mich auf jeden einzelnen neuen Tag mit dir."
         ];
 
         function displayDailyQuote() {
-            // Berechnet die Tage seit dem 1. Jan 1970 und teilt sie durch die Anzahl der Sprüche
             const today = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
             const quoteIndex = today % marisaQuotes.length;
             document.getElementById('dailyQuoteText').innerText = "«" + marisaQuotes[quoteIndex] + "»";
