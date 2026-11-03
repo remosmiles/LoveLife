@@ -47,9 +47,22 @@
         .input-glow:focus-within {
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
+
+        /* Foto Galerie Masonry Fixes */
+        .masonry {
+            column-count: 2;
+            column-gap: 1rem;
+        }
+        @media (min-width: 768px) { .masonry { column-count: 3; } }
+        @media (min-width: 1024px) { .masonry { column-count: 4; } }
+        
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 text-gray-800">
+<body class="min-h-screen p-4 md:p-8 text-gray-800 pb-20">
 
     <div class="max-w-6xl mx-auto space-y-8">
         
@@ -149,7 +162,71 @@
             </section>
 
         </div>
+
+        <!-- FOTOGALERIE -->
+        <section class="glass-card rounded-[2rem] p-6 md:p-10 relative overflow-hidden">
+            <div class="flex flex-col items-center text-center mb-8">
+                <div class="w-14 h-14 rounded-full bg-red-50 text-red-400 flex items-center justify-center mb-4 shadow-sm">
+                    <i class="fas fa-camera-retro text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800">Erinnerungen für die Ewigkeit</h2>
+                <p class="text-gray-500 mt-2 font-medium max-w-lg">Ein kleiner Rückblick auf unsere schönsten Momente und die zeitlose Schönheit meiner wunderbaren Frau.</p>
+            </div>
+            
+            <!-- Hier werden die 30 Bilder via JavaScript geladen -->
+            <div id="photoGallery" class="masonry"></div>
+        </section>
+
     </div>
+
+    <!-- Lightbox (Kino-Modus für Bilder) -->
+    <div id="lightbox" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" onclick="closeLightbox()">
+        <button class="absolute top-6 right-6 text-white/70 hover:text-white text-4xl transition-colors"><i class="fas fa-times"></i></button>
+        <img id="lightboxImg" src="" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl scale-95 transition-transform duration-300 object-contain">
+    </div>
+
+
+    <!-- Galerie Logik -->
+    <script>
+        const gallery = document.getElementById('photoGallery');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+
+        // Lade Bilder 01.jpg bis 30.jpg
+        for (let i = 1; i <= 30; i++) {
+            const num = String(i).padStart(2, '0'); // Macht aus 1 -> "01"
+            
+            const img = document.createElement('img');
+            img.src = `${num}.jpg`;
+            img.className = 'masonry-item w-full rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-zoom-in border-4 border-white/50 bg-gray-100 object-cover';
+            img.loading = 'lazy'; // Wichtig für die Performance bei 30 Bildern
+            
+            // Klick öffnet die Lightbox
+            img.onclick = () => {
+                lightboxImg.src = img.src;
+                lightbox.classList.remove('hidden');
+                // Timeout für flüssige Fade-In Animation
+                setTimeout(() => {
+                    lightbox.classList.remove('opacity-0');
+                    lightboxImg.classList.remove('scale-95');
+                    lightboxImg.classList.add('scale-100');
+                }, 10);
+            };
+            
+            gallery.appendChild(img);
+        }
+
+        // Lightbox schliessen
+        function closeLightbox() {
+            lightbox.classList.add('opacity-0');
+            lightboxImg.classList.remove('scale-100');
+            lightboxImg.classList.add('scale-95');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                lightboxImg.src = '';
+            }, 300);
+        }
+    </script>
 
     <!-- Tägliche Zitate Logik: 50 personalisierte Botschaften -->
     <script>
@@ -176,7 +253,7 @@
             "Deine Geduld, wenn ich im SVZ mal wieder einspringen muss, bedeutet mir wahnsinnig viel.",
             "Mit dir auf dem SUP übers Wasser gleiten – das sind die Momente, in denen für mich die Welt stillsteht.",
             "Du gibst mir das Gefühl, dass wir gemeinsam alles schaffen können. Wir sind ein unschlagbares Team.",
-            "Marisa, du bist wunderschön – von innen und von aussen.",
+            "Marisa, du bist wunderschön – von innen und von aussen. Damals wie heute.",
             "Die Art, wie du Stella die Welt erklärst, berührt mich jedes Mal zutiefst.",
             "Danke, dass du unser Haus in Altdorf Tag für Tag zu einem echten Zuhause machst.",
             "Unser Hochzeitstag war magisch, aber das wahre Glück ist unser gemeinsamer Alltag.",
