@@ -9,11 +9,17 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        /* Für das Verpuffen der Nachricht */
+        .puff-out {
+            opacity: 0;
+            transform: scale(0.8) translateY(-20px);
+            transition: all 1s cubic-bezier(0.5, 0, 0.2, 1);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen p-4 md:p-8">
 
-    <div class="max-w-5xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto space-y-6">
         <!-- Header & Memories -->
         <header class="glass-panel rounded-2xl shadow-sm p-6 text-center">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Familien-Dashboard</h1>
@@ -25,10 +31,10 @@
             </div>
         </header>
 
+        <!-- Obere Reihe: Standard-Listen -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
             <!-- Aufgaben -->
-            <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[500px]">
+            <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[400px]">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4"><i class="fas fa-check-circle text-indigo-500 mr-2"></i>To-Do</h2>
                 <div class="flex mb-4">
                     <input type="text" id="taskInput" placeholder="Neue Aufgabe..." class="flex-1 border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 border">
@@ -38,17 +44,17 @@
             </section>
 
             <!-- Einkaufsliste -->
-            <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[500px]">
+            <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[400px]">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4"><i class="fas fa-shopping-cart text-emerald-500 mr-2"></i>Einkauf</h2>
                 <div class="flex mb-4">
-                    <input type="text" id="shopInput" placeholder="Was fehlt? (z.B. Thunfisch, Whey...)" class="flex-1 border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 border">
+                    <input type="text" id="shopInput" placeholder="Was fehlt?" class="flex-1 border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 border">
                     <button onclick="addItem('shopping', 'shopInput')" class="bg-emerald-500 text-white px-4 py-2 rounded-r-lg hover:bg-emerald-600"><i class="fas fa-plus"></i></button>
                 </div>
                 <ul id="shoppingList" class="flex-1 overflow-y-auto space-y-2"></ul>
             </section>
 
             <!-- Ämtli Plan -->
-            <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[500px]">
+            <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[400px]">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4"><i class="fas fa-broom text-orange-500 mr-2"></i>Ämtli-Plan</h2>
                 <div class="space-y-2 mb-4">
                     <input type="text" id="choreInput" placeholder="Welches Ämtli?" class="w-full border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 border">
@@ -57,10 +63,49 @@
                             <option value="Remo">Remo</option>
                             <option value="Marisa">Marisa</option>
                         </select>
-                        <button onclick="addChore()" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"><i class="fas fa-plus mr-1"></i> Hinzufügen</button>
+                        <button onclick="addChore()" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"><i class="fas fa-plus mr-1"></i> Zuordnen</button>
                     </div>
                 </div>
                 <ul id="choresList" class="flex-1 overflow-y-auto space-y-2"></ul>
+            </section>
+        </div>
+
+        <!-- Untere Reihe: Geheime Nachricht & Kalender -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Flüsterpost (Snapchat Style) -->
+            <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[500px]">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4"><i class="fas fa-heart text-pink-500 mr-2"></i>Flüsterpost</h2>
+                <p class="text-xs text-gray-500 mb-4">Nachrichten löschen sich nach dem Lesen selbst.</p>
+                <div class="flex mb-4">
+                    <input type="text" id="msgInput" placeholder="Geheime Nachricht..." class="flex-1 border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 border">
+                    <button onclick="addItem('secret_messages', 'msgInput')" class="bg-pink-500 text-white px-4 py-2 rounded-r-lg hover:bg-pink-600"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <ul id="messagesList" class="flex-1 overflow-y-auto space-y-3"></ul>
+            </section>
+
+            <!-- Outlook Kalender -->
+            <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[500px] md:col-span-2">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4"><i class="far fa-calendar-alt text-blue-500 mr-2"></i>Familien-Kalender</h2>
+                <div class="flex-1 rounded-xl overflow-hidden border border-gray-200 relative bg-white">
+                    <!-- HIER DEINEN OUTLOOK LINK EINTRAGEN -->
+                    <!-- Ersetze den Wert bei src="..." durch deinen Outlook HTML-Link -->
+                    <iframe 
+                        src="HIER_KOMMT_DEIN_OUTLOOK_HTML_LINK_HIN" 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        scrolling="yes" 
+                        class="absolute inset-0 z-10 bg-transparent">
+                    </iframe>
+                    
+                    <!-- Platzhalter-Text (Wird vom Kalender überdeckt, sobald der Link oben drin ist) -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 text-sm p-8 text-center bg-gray-50 z-0">
+                        <i class="far fa-calendar-times text-4xl mb-3 text-gray-300"></i>
+                        <p>Hier erscheint euer Outlook Kalender.</p>
+                        <p class="mt-2 text-xs">Füge den freigegebenen Outlook-HTML-Link im Code bei <code>src="..."</code> ein.</p>
+                    </div>
+                </div>
             </section>
         </div>
     </div>
@@ -71,6 +116,7 @@
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query, orderBy } 
         from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
+        // Deine exakte Konfiguration
         const firebaseConfig = {
             apiKey: "AIzaSyBcympyQoY6K72wI-jhubAef34JbS8J-QA",
             authDomain: "lovelife-9f019.firebaseapp.com",
@@ -83,6 +129,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Standard Hinzufügen
         window.addItem = async (collectionName, inputId) => {
             const input = document.getElementById(inputId);
             const val = input.value.trim();
@@ -96,6 +143,7 @@
             }
         };
 
+        // Ämtli Hinzufügen
         window.addChore = async () => {
             const input = document.getElementById('choreInput');
             const select = document.getElementById('chorePerson');
@@ -113,18 +161,46 @@
             }
         };
 
+        // Abhaken / Löschen
         window.toggleDone = async (collectionName, id, currentStatus) => {
             const docRef = doc(db, collectionName, id);
             await updateDoc(docRef, { done: !currentStatus });
         };
 
         window.deleteItem = async (collectionName, id) => {
-            await deleteDoc(doc(db, collectionName, id));
+            try {
+                await deleteDoc(doc(db, collectionName, id));
+            } catch (e) {
+                console.error("Fehler beim Löschen: ", e);
+            }
         };
 
+        // Geheime Nachricht "Verpuffen" Logik
+        window.revealAndDestroy = (id, text) => {
+            const el = document.getElementById(`msg-${id}`);
+            if(!el) return;
+            
+            // Klick deaktivieren, damit es nicht mehrfach triggert
+            el.onclick = null; 
+            
+            // Text anzeigen & Design ändern
+            el.innerHTML = `<div class="font-bold text-lg p-2 text-pink-700">${text}</div>`;
+            el.classList.replace('bg-pink-50', 'bg-pink-100');
+            
+            // Nach 4 Sekunden den "Verpuffen"-Effekt starten
+            setTimeout(() => {
+                el.classList.add('puff-out');
+            }, 4000);
+            
+            // Nach 5 Sekunden endgültig aus Firebase löschen
+            setTimeout(() => {
+                deleteItem('secret_messages', id);
+            }, 5000);
+        };
+
+        // Standard Listen-Listener
         function setupListener(collectionName, elementId, isChore = false) {
             const q = query(collection(db, collectionName), orderBy("createdAt", "asc"));
-            
             onSnapshot(q, (snapshot) => {
                 const ul = document.getElementById(elementId);
                 ul.innerHTML = '';
@@ -158,9 +234,38 @@
             });
         }
 
+        // Listener für Flüsterpost
+        function setupMessageListener() {
+            const q = query(collection(db, 'secret_messages'), orderBy("createdAt", "asc"));
+            onSnapshot(q, (snapshot) => {
+                const ul = document.getElementById('messagesList');
+                ul.innerHTML = '';
+                snapshot.forEach((docSnap) => {
+                    const item = docSnap.data();
+                    const id = docSnap.id;
+                    
+                    const li = document.createElement('li');
+                    li.id = `msg-${id}`;
+                    // Der Text muss für das onclick-Event escaped werden (falls Sonderzeichen drin sind)
+                    const safeText = item.text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    
+                    li.className = `p-4 bg-pink-50 border border-pink-100 rounded-lg cursor-pointer text-center text-pink-400 shadow-sm hover:bg-pink-100 transition-colors duration-300`;
+                    li.innerHTML = `
+                        <div onclick="revealAndDestroy('${id}', '${safeText}')">
+                            <i class="fas fa-envelope text-2xl mb-1"></i>
+                            <div class="text-sm font-medium">Nachricht erhalten - Tippen zum Lesen</div>
+                        </div>
+                    `;
+                    ul.appendChild(li);
+                });
+            });
+        }
+
+        // Alle Live-Verbindungen starten
         setupListener('tasks', 'tasksList');
         setupListener('shopping', 'shoppingList');
         setupListener('chores', 'choresList', true);
+        setupMessageListener();
 
     </script>
 </body>
