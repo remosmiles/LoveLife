@@ -9,7 +9,6 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
-        .toast { transition: opacity 0.3s ease-in-out; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen p-4 md:p-8">
@@ -18,7 +17,7 @@
         <!-- Header & Memories -->
         <header class="glass-panel rounded-2xl shadow-sm p-6 text-center">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Familien-Dashboard</h1>
-            <p class="text-gray-500 mb-4">Organisation schafft Freiraum für die wichtigen Dinge.</p>
+            <p class="text-gray-500 mb-4">Gemeinsame Organisation schafft Freiraum für die wichtigen Dinge.</p>
             <div class="flex flex-wrap justify-center gap-4 text-sm">
                 <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full shadow-sm"><i class="fas fa-ring mr-2"></i>Hochzeitstag: 31.05.2019</span>
                 <span class="bg-pink-50 text-pink-700 px-4 py-2 rounded-full shadow-sm"><i class="fas fa-star mr-2"></i>Stellas Geburt: 27.10.2018</span>
@@ -48,17 +47,17 @@
                 <ul id="shoppingList" class="flex-1 overflow-y-auto space-y-2"></ul>
             </section>
 
-            <!-- Ämtli Plan mit Push-Simulation -->
+            <!-- Ämtli Plan -->
             <section class="glass-panel rounded-2xl shadow-sm p-6 flex flex-col h-[500px]">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4"><i class="fas fa-broom text-orange-500 mr-2"></i>Ämtli-Plan</h2>
                 <div class="space-y-2 mb-4">
                     <input type="text" id="choreInput" placeholder="Welches Ämtli?" class="w-full border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 border">
                     <div class="flex gap-2">
                         <select id="chorePerson" class="flex-1 border-gray-300 rounded-lg px-3 py-2 border">
-                            <option value="+41794837417">Remo (+41 79 483 74 17)</option>
-                            <option value="+41798420304">Marisa (+41 79 842 03 04)</option>
+                            <option value="Remo">Remo</option>
+                            <option value="Marisa">Marisa</option>
                         </select>
-                        <button onclick="addChore()" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"><i class="fas fa-paper-plane mr-1"></i> Zuweisen</button>
+                        <button onclick="addChore()" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"><i class="fas fa-plus mr-1"></i> Hinzufügen</button>
                     </div>
                 </div>
                 <ul id="choresList" class="flex-1 overflow-y-auto space-y-2"></ul>
@@ -66,125 +65,109 @@
         </div>
     </div>
 
-    <!-- Toast Notification UI -->
-    <div id="toast" class="toast fixed bottom-5 right-5 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg opacity-0 pointer-events-none z-50">
-        Push-Meldung gesendet!
-    </div>
+    <!-- Firebase Realtime Logic -->
+    <script type="module">
+        // 1. Importiere Firebase Module
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query, orderBy } 
+        from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <script>
-        // State Management
-        let data = {
-            tasks: JSON.parse(localStorage.getItem('tasks')) || [],
-            shopping: JSON.parse(localStorage.getItem('shopping')) || [],
-            chores: JSON.parse(localStorage.getItem('chores')) || []
+        // 2. DEINE FIREBASE KONFIGURATION (Hier musst du deine Daten von der Firebase Webseite eintragen!)
+        const firebaseConfig = {
+            apiKey: "DEIN_API_KEY_HIER_EINSETZEN",
+            authDomain: "DEINE_PROJECT_ID.firebaseapp.com",
+            projectId: "DEINE_PROJECT_ID",
+            storageBucket: "DEINE_PROJECT_ID.appspot.com",
+            messagingSenderId: "DEINE_SENDER_ID",
+            appId: "DEINE_APP_ID"
         };
 
-        function saveData() {
-            localStorage.setItem('tasks', JSON.stringify(data.tasks));
-            localStorage.setItem('shopping', JSON.stringify(data.shopping));
-            localStorage.setItem('chores', JSON.stringify(data.chores));
-            render();
-        }
+        // 3. Initialisiere Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        // Add standard items (Tasks, Shopping)
-        function addItem(listName, inputId) {
+        // Globale Funktionen für das HTML zugänglich machen
+        window.addItem = async (collectionName, inputId) => {
             const input = document.getElementById(inputId);
             const val = input.value.trim();
             if (val) {
-                data[listName].push({ id: Date.now(), text: val, done: false });
+                await addDoc(collection(db, collectionName), {
+                    text: val,
+                    done: false,
+                    createdAt: serverTimestamp()
+                });
                 input.value = '';
-                saveData();
             }
-        }
+        };
 
-        // Add Chore and Trigger "Push"
-        function addChore() {
+        window.addChore = async () => {
             const input = document.getElementById('choreInput');
             const select = document.getElementById('chorePerson');
             const val = input.value.trim();
-            const phone = select.value;
-            const name = select.options[select.selectedIndex].text.split(' ')[0];
+            const person = select.value;
 
             if (val) {
-                data.chores.push({ id: Date.now(), text: val, person: name, phone: phone, done: false });
+                await addDoc(collection(db, 'chores'), {
+                    text: val,
+                    person: person,
+                    done: false,
+                    createdAt: serverTimestamp()
+                });
                 input.value = '';
-                saveData();
-                triggerMockPush(name, phone, val);
             }
-        }
+        };
 
-        // Toggle Done Status
-        function toggleDone(listName, id) {
-            const item = data[listName].find(i => i.id === id);
-            if (item) {
-                item.done = !item.done;
-                saveData();
-            }
-        }
+        window.toggleDone = async (collectionName, id, currentStatus) => {
+            const docRef = doc(db, collectionName, id);
+            await updateDoc(docRef, { done: !currentStatus });
+        };
 
-        // Delete Item
-        function deleteItem(listName, id) {
-            data[listName] = data[listName].filter(i => i.id !== id);
-            saveData();
-        }
+        window.deleteItem = async (collectionName, id) => {
+            await deleteDoc(doc(db, collectionName, id));
+        };
 
-        // Render Lists
-        function renderList(listName, elementId, isChore = false) {
-            const ul = document.getElementById(elementId);
-            ul.innerHTML = '';
-            data[listName].forEach(item => {
-                const li = document.createElement('li');
-                li.className = `flex justify-between items-center p-3 rounded-lg border ${item.done ? 'bg-gray-50 border-gray-100 text-gray-400 line-through' : 'bg-white border-gray-100 text-gray-700 shadow-sm'}`;
-                
-                let contentHTML = `<span class="flex-1 cursor-pointer" onclick="toggleDone('${listName}', ${item.id})">${item.text}</span>`;
-                if (isChore) {
-                    contentHTML = `<div class="flex-1 cursor-pointer" onclick="toggleDone('${listName}', ${item.id})">
-                                      <span class="block">${item.text}</span>
-                                      <span class="text-xs text-orange-500 font-medium">Zugewiesen an: ${item.person}</span>
-                                   </div>`;
-                }
+        // Echtzeit-Listener (Listen live aktualisieren, wenn sich Daten in der Cloud ändern)
+        function setupListener(collectionName, elementId, isChore = false) {
+            const q = query(collection(db, collectionName), orderBy("createdAt", "asc"));
+            
+            onSnapshot(q, (snapshot) => {
+                const ul = document.getElementById(elementId);
+                ul.innerHTML = '';
+                snapshot.forEach((docSnap) => {
+                    const item = docSnap.data();
+                    const id = docSnap.id;
+                    
+                    const li = document.createElement('li');
+                    li.className = `flex justify-between items-center p-3 rounded-lg border ${item.done ? 'bg-gray-50 border-gray-100 text-gray-400 line-through' : 'bg-white border-gray-100 text-gray-700 shadow-sm'} transition-all duration-300`;
+                    
+                    let contentHTML = `<span class="flex-1 cursor-pointer" onclick="toggleDone('${collectionName}', '${id}', ${item.done})">${item.text}</span>`;
+                    
+                    if (isChore) {
+                        contentHTML = `<div class="flex-1 cursor-pointer" onclick="toggleDone('${collectionName}', '${id}', ${item.done})">
+                                          <span class="block">${item.text}</span>
+                                          <span class="text-xs ${item.person === 'Remo' ? 'text-blue-500' : 'text-pink-500'} font-medium">Zuständig: ${item.person}</span>
+                                       </div>`;
+                    }
 
-                li.innerHTML = `
-                    <div class="flex items-center flex-1">
-                        <button onclick="toggleDone('${listName}', ${item.id})" class="mr-3 text-gray-400 hover:text-indigo-500">
-                            <i class="far ${item.done ? 'fa-check-circle text-indigo-500' : 'fa-circle'}"></i>
-                        </button>
-                        ${contentHTML}
-                    </div>
-                    <button onclick="deleteItem('${listName}', ${item.id})" class="text-red-400 hover:text-red-600 p-1"><i class="fas fa-trash-alt"></i></button>
-                `;
-                ul.appendChild(li);
+                    li.innerHTML = `
+                        <div class="flex items-center flex-1">
+                            <button onclick="toggleDone('${collectionName}', '${id}', ${item.done})" class="mr-3 text-gray-400 hover:text-indigo-500 transition-colors">
+                                <i class="far ${item.done ? 'fa-check-circle text-indigo-500' : 'fa-circle'}"></i>
+                            </button>
+                            ${contentHTML}
+                        </div>
+                        <button onclick="deleteItem('${collectionName}', '${id}')" class="text-red-300 hover:text-red-500 p-1 transition-colors"><i class="fas fa-trash-alt"></i></button>
+                    `;
+                    ul.appendChild(li);
+                });
             });
         }
 
-        function render() {
-            renderList('tasks', 'tasksList');
-            renderList('shopping', 'shoppingList');
-            renderList('chores', 'choresList', true);
-        }
+        // Starte die Live-Verbindung
+        setupListener('tasks', 'tasksList');
+        setupListener('shopping', 'shoppingList');
+        setupListener('chores', 'choresList', true);
 
-        // Mock Push Notification System
-        function triggerMockPush(name, phone, task) {
-            const toast = document.getElementById('toast');
-            toast.innerHTML = `<i class="fas fa-mobile-alt mr-2"></i> Push/SMS simuliert an ${name} (${phone})<br><span class="text-sm text-gray-300">Neues Ämtli: ${task}</span>`;
-            toast.classList.remove('opacity-0');
-            setTimeout(() => { toast.classList.add('opacity-0'); }, 4000);
-            
-            /* 
-             * ECHTE SMS-INTEGRATION FÜR VERCEL (Konzept):
-             * Um echte SMS zu senden, darf der API-Key nicht hier im Frontend-Code stehen.
-             * Du müsstest in Vercel eine "Serverless Function" (z.B. /api/send-sms) erstellen.
-             * 
-             * fetch('/api/send-sms', {
-             *     method: 'POST',
-             *     headers: { 'Content-Type': 'application/json' },
-             *     body: JSON.stringify({ to: phone, message: `Neues Ämtli für dich: ${task}` })
-             * });
-             */
-        }
-
-        // Init
-        render();
     </script>
 </body>
 </html>
