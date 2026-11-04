@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-messaging.js";
 <html lang="de">
 <head>
-<link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Remo & Marisa - Family Hub</title>
+    
+    <!-- PWA / iOS Web App Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Family Hub">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -73,10 +79,14 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-400 via-pink-400 to-emerald-400"></div>
             <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-3 mt-2">Remo & Marisa</h1>
             <p class="text-gray-500 font-medium mb-6">Gemeinsame Organisation schafft Freiraum für die wichtigen Dinge.</p>
-            <div class="flex flex-wrap justify-center gap-3 text-sm font-medium">
+            <div class="flex flex-wrap justify-center gap-3 text-sm font-medium items-center">
                 <span class="bg-white/80 text-blue-700 px-5 py-2.5 rounded-2xl shadow-sm border border-white"><i class="fas fa-ring mr-2 opacity-70"></i>31.05.2019</span>
                 <span class="bg-white/80 text-pink-700 px-5 py-2.5 rounded-2xl shadow-sm border border-white"><i class="fas fa-star mr-2 opacity-70"></i>Stella 27.10.2018</span>
-                <span class="bg-white/80 text-teal-700 px-5 py-2.5 rounded-2xl shadow-sm border border-white"><i class="fas fa-plane mr-2 opacity-70"></i>Sardinien & Toscana</span>
+                
+                <!-- Push Aktivierungs-Button -->
+                <button onclick="enablePushNotifications()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-2xl shadow-sm border border-indigo-500 hover:bg-indigo-700 transition-colors cursor-pointer">
+                    <i class="fas fa-bell mr-2"></i>Push aktivieren
+                </button>
             </div>
         </header>
 
@@ -175,7 +185,6 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
                 <p class="text-gray-500 mt-2 font-medium max-w-lg">Ein kleiner Rückblick auf unsere schönsten Momente und die zeitlose Schönheit meiner wunderbaren Frau.</p>
             </div>
             
-            <!-- Hier werden die 30 Bilder via JavaScript geladen -->
             <div id="photoGallery" class="masonry"></div>
         </section>
 
@@ -187,7 +196,6 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
         <img id="lightboxImg" src="" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl scale-95 transition-transform duration-300 object-contain">
     </div>
 
-
     <!-- Galerie Logik -->
     <script>
         const gallery = document.getElementById('photoGallery');
@@ -196,18 +204,19 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
 
         // Lade Bilder 01.jpg bis 30.jpg
         for (let i = 1; i <= 30; i++) {
-            const num = String(i).padStart(2, '0'); // Macht aus 1 -> "01"
+            const num = String(i).padStart(2, '0'); 
             
             const img = document.createElement('img');
             img.src = `${num}.jpg`;
             img.className = 'masonry-item w-full rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-zoom-in border-4 border-white/50 bg-gray-100 object-cover';
-            img.loading = 'lazy'; // Wichtig für die Performance bei 30 Bildern
+            img.loading = 'lazy'; 
             
-            // Klick öffnet die Lightbox
+            // Versteckt das Bild, falls es nicht existiert (Optimierung)
+            img.onerror = () => { img.style.display = 'none'; };
+
             img.onclick = () => {
                 lightboxImg.src = img.src;
                 lightbox.classList.remove('hidden');
-                // Timeout für flüssige Fade-In Animation
                 setTimeout(() => {
                     lightbox.classList.remove('opacity-0');
                     lightboxImg.classList.remove('scale-95');
@@ -218,7 +227,6 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
             gallery.appendChild(img);
         }
 
-        // Lightbox schliessen
         function closeLightbox() {
             lightbox.classList.add('opacity-0');
             lightboxImg.classList.remove('scale-100');
@@ -230,7 +238,7 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
         }
     </script>
 
-    <!-- Tägliche Zitate Logik: 50 personalisierte Botschaften -->
+    <!-- Tägliche Zitate Logik -->
     <script>
         const marisaQuotes = [
             "Marisa, jeder Tag mit dir ist ein Geschenk. Danke, dass du mein Ruhepol bist.",
@@ -299,6 +307,7 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query, orderBy } 
         from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-messaging.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBcympyQoY6K72wI-jhubAef34JbS8J-QA",
@@ -311,6 +320,31 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const messaging = getMessaging(app);
+
+        // Push Notifications aktivieren
+        window.enablePushNotifications = async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    const token = await getToken(messaging, { 
+                        vapidKey: 'BBV7oVUUKj2GHC4T3vTl-X06X4gx930zZXGxRWSqBv8AGc6OCQpnYY_ztEspSZvAEoh8mWmxnMWFHl5DD02Uq1g' 
+                    });
+                    
+                    await addDoc(collection(db, 'push_tokens'), {
+                        token: token,
+                        user: navigator.userAgent.includes('iPhone') ? 'iPhone' : 'Device',
+                        createdAt: serverTimestamp()
+                    });
+                    alert('Push-Meldungen erfolgreich aktiviert!');
+                } else {
+                    alert('Berechtigung für Push-Meldungen abgelehnt.');
+                }
+            } catch (error) {
+                console.error('Fehler bei Push-Aktivierung:', error);
+                alert('Fehler bei der Aktivierung. Siehe Console.');
+            }
+        };
 
         window.addItem = async (collectionName, inputId) => {
             const input = document.getElementById(inputId);
@@ -341,6 +375,22 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/13.2.
                 input.value = '';
             }
         };
+
+        // Enter-Taste Support für alle Inputs
+        ['taskInput', 'shopInput', 'msgInput'].forEach(id => {
+            const inputEl = document.getElementById(id);
+            if(inputEl) {
+                inputEl.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const colName = id === 'taskInput' ? 'tasks' : (id === 'shopInput' ? 'shopping' : 'secret_messages');
+                        window.addItem(colName, id);
+                    }
+                });
+            }
+        });
+        document.getElementById('choreInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.addChore();
+        });
 
         window.toggleDone = async (collectionName, id, currentStatus) => {
             const docRef = doc(db, collectionName, id);
